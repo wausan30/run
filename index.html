@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <style>
   :root{
-    --paper:#FAF8F3; --ink:#111111; --red:#E63B32; --gray:#8D8D8D; --line:#E2DFD6;
+    --paper:#FAF8F3; --ink:#111111; --red:#E63B32; --gray:#8D8D8D; --line:#E2DFD6; --coin:#FFC02E;
     --cond:'Oswald',sans-serif;
     --sans:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
   }
@@ -129,8 +129,8 @@
   .gate.members .g-kicker{color:var(--red);}
   .gate.members .g-sub2{margin-top:12px;font-size:13px;color:#B9B4A8;line-height:1.6;letter-spacing:-.01em;white-space:pre-line;}
   .gate.members .walkwrap{margin-bottom:10px;}
-  .g-region{margin-top:10px;font-size:13px;font-weight:800;letter-spacing:-.01em;color:#fff;}
-  .gate.open .g-region{opacity:.95;}
+  .g-region{margin-top:12px;font-size:14px;font-weight:700;letter-spacing:-.01em;color:#fff;line-height:1.4;}
+  .g-region b{color:var(--coin);font-weight:800;}
   .set-check{display:flex;align-items:center;gap:10px;margin:16px 0 4px;cursor:pointer;font-size:14px;font-weight:600;letter-spacing:-.01em;}
   .set-check input{width:20px;height:20px;accent-color:var(--red);flex:none;}
 
@@ -288,8 +288,11 @@
       <div class="set-row"><span class="k cap" id="kClose"></span>
         <input id="closeDate" type="date"><input id="closeTime" type="time">
       </div>
-      <div class="set-row"><span class="k cap" id="kRegion"></span>
-        <input id="region" type="text">
+      <div class="set-row"><span class="k cap" id="kRegionKo"></span>
+        <input id="regionKo" type="text" placeholder="예) 홍대·마포">
+      </div>
+      <div class="set-row"><span class="k cap" id="kRegionEn"></span>
+        <input id="regionEn" type="text" placeholder="e.g. Hongdae, Mapo">
       </div>
       <label class="set-check"><input type="checkbox" id="membersOnly"><span id="moLabel"></span></label>
       <p class="set-hint" id="setHint"></p>
@@ -301,7 +304,7 @@
 
 <script>
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzFlL9fQJuD-e3w4VRxgTY9AeIKRLFWTjSB9T1wzL8WbDP5q1hfdE0PX_Ff6XqRmRHjXg/exec';
-const CONFIG = { openAt:'', closeAt:'', region:'', pin:'080216', membersOnly:false };
+const CONFIG = { openAt:'', closeAt:'', regionKo:'', regionEn:'', pin:'080216', membersOnly:false };
 
 const DAYS_KO=['일','월','화','수','목','금','토'];
 const DAYS_EN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -316,7 +319,7 @@ const I18N = {
     openKicker:'참가 신청 받는 중', openTitle:'지금 참가 신청할 수 있어요', closesIn:'마감까지',
     closedKicker:'접수 마감', closedTitle:'지금은 참가 신청을 받고 있지 않아요', nextOpen:'다음 오픈까지',
     moKicker:'멤버스 온리', moTitle:'이번 주는 게스트를 모집하지 않아요', moSub:'이번 주는 멤버스 온리 세션이에요.\n게스트 모집은 다음 세션에 다시 열려요.', moCheck:'이번 주 멤버스 온리 (게스트 모집 안 함)',
-    upcomingKicker:'오픈 예정', tba:'다음 회차 일정은 곧 안내드려요', regionLabel:'러닝 지역', kRegion:'지역', regionPh:'예) 홍대 · 마포',
+    upcomingKicker:'오픈 예정', tba:'다음 회차 일정은 곧 안내드려요', regionTpl:n=>`<b>${n}</b> 일대를 달립니다.`, kRegionKo:'지역(국문)', kRegionEn:'지역(영문)',
     igLabel:'인스타그램 계정', igSub:'확정 안내 DM을 이 계정으로 보내드려요', igPh:'예) wausan30',
     acks:[
       '참가 신청은 참가 확정이 아니에요.\n참가 확정된 분께만 DM으로 안내해드립니다.',
@@ -342,7 +345,7 @@ const I18N = {
     openKicker:'Recruiting now', openTitle:'Applications are open', closesIn:'Closes in',
     closedKicker:'Closed', closedTitle:"We're not taking applications right now", nextOpen:'Opens in',
     moKicker:'Members only', moTitle:'No guest spots this week', moSub:'This week is a members-only session.\nGuest applications open again next time.', moCheck:'Members-only this week (no guests)',
-    upcomingKicker:'Opening soon', tba:'Next session dates coming soon', regionLabel:'Run area', kRegion:'Area', regionPh:'e.g. Hongdae, Mapo',
+    upcomingKicker:'Opening soon', tba:'Next session dates coming soon', regionTpl:n=>`Running around <b>${n}</b>.`, kRegionKo:'Area (KO)', kRegionEn:'Area (EN)',
     igLabel:'Instagram', igSub:"We'll DM this account if you're confirmed", igPh:'e.g. wausan30',
     acks:[
       "Applying is not a confirmed spot.\nWe only DM the runners we confirm.",
@@ -452,6 +455,7 @@ let lastMode=null, lastLang=null, introDone=false;
 function tick(){
   const t=STR(), s=getSettings(), st=scheduleState(s);
   const mode = s.membersOnly ? 'members' : (st.isOpen ? 'open' : (st.upcoming ? 'upcoming' : 'closed'));
+  const rg = lang==='ko' ? (s.regionKo||'') : (s.regionEn||s.regionKo||'');
   const gate=document.getElementById('gate'), form=document.getElementById('formArea');
   if(mode!==lastMode || lang!==lastLang){
     lastMode=mode; lastLang=lang;
@@ -462,12 +466,12 @@ function tick(){
     }else if(mode==='open'){
       form.style.display='';
       gate.className='gate open';
-      gate.innerHTML=`${RUN_RUNNER}<div class="g-inner"><div class="g-kicker cap">${t.openKicker}</div><div class="g-title">${t.openTitle}<span class="cur">_</span></div><div class="g-sub cap">${t.closesIn} <b id="gcount"></b></div>${s.region?`<div class="g-region">${t.regionLabel} · ${esc(s.region)}</div>`:''}</div>`;
+      gate.innerHTML=`${RUN_RUNNER}<div class="g-inner"><div class="g-kicker cap">${t.openKicker}</div><div class="g-title">${t.openTitle}<span class="cur">_</span></div><div class="g-sub cap">${t.closesIn} <b id="gcount"></b></div>${rg?`<div class="g-region">${t.regionTpl(esc(rg))}</div>`:''}</div>`;
       if(introDone) revealForm();
     }else if(mode==='upcoming'){
       form.style.display='none';
       gate.className='gate closed';
-      gate.innerHTML=`${WALK_RUNNER}<div class="g-kicker cap">${t.upcomingKicker}</div><div class="g-title">${t.closedTitle}</div>${s.region?`<div class="g-region">${t.regionLabel} · ${esc(s.region)}</div>`:''}<div class="g-count cap">${t.nextOpen} <b id="gcount"></b></div><div class="g-sched">${t.sched(s)}</div>`;
+      gate.innerHTML=`${WALK_RUNNER}<div class="g-kicker cap">${t.upcomingKicker}</div><div class="g-title">${t.closedTitle}</div>${rg?`<div class="g-region">${t.regionTpl(esc(rg))}</div>`:''}<div class="g-count cap">${t.nextOpen} <b id="gcount"></b></div><div class="g-sched">${t.sched(s)}</div>`;
     }else{
       form.style.display='none';
       gate.className='gate closed';
@@ -527,7 +531,7 @@ function applyLang(){
   set('submitTxt',t.submit); document.getElementById('gear').setAttribute('aria-label',t.gear);
   set('doneKicker',t.doneKicker); setH('doneBig',t.doneBig); set('doneH',t.doneH); setH('doneSub',t.doneSub); set('doneCloseTxt',t.doneClose);
   document.getElementById('pinInput').placeholder=t.pinPh; set('pinOkTxt',t.pinOk);
-  set('kOpen',t.kOpen); set('kClose',t.kClose); set('kRegion',t.kRegion); document.getElementById('region').placeholder=t.regionPh; set('moLabel',t.moCheck);
+  set('kOpen',t.kOpen); set('kClose',t.kClose); set('kRegionKo',t.kRegionKo); set('kRegionEn',t.kRegionEn); set('moLabel',t.moCheck);
   set('setHint',t.setHint); set('setSaveTxt',t.setSave); set('setClose1Txt',t.close); set('setClose2Txt',t.close);
   for(let i=0;i<N;i++){ const lb=document.getElementById('alabel-'+i); if(lb) lb.textContent=t.ackConfirm; if(typedDone[i]){ typeToken++; document.getElementById('atext-'+i).textContent=t.acks[i]; } }
   document.querySelectorAll('.langbar button').forEach(b=>b.classList.toggle('on', b.dataset.l===lang));
@@ -584,7 +588,7 @@ document.getElementById('pinOk').addEventListener('click', ()=>{
     const [od,ot]=splitDT(s.openAt), [cd,ct]=splitDT(s.closeAt);
     document.getElementById('openDate').value=od; document.getElementById('openTime').value=ot||'00:00';
     document.getElementById('closeDate').value=cd; document.getElementById('closeTime').value=ct||'18:00';
-    document.getElementById('region').value = s.region||'';
+    document.getElementById('regionKo').value = s.regionKo||''; document.getElementById('regionEn').value = s.regionEn||'';
     document.getElementById('membersOnly').checked = !!s.membersOnly;
     adminPin = document.getElementById('pinInput').value;
   }else{ document.getElementById('pinErr').textContent=STR().pinErr; }
@@ -595,12 +599,13 @@ document.getElementById('setSave').addEventListener('click', ()=>{
   const cfg={
     openAt: (od&&ot)?`${od}T${ot}`:'',
     closeAt:(cd&&ct)?`${cd}T${ct}`:'',
-    region: document.getElementById('region').value.trim(),
+    regionKo: document.getElementById('regionKo').value.trim(),
+    regionEn: document.getElementById('regionEn').value.trim(),
     membersOnly:document.getElementById('membersOnly').checked
   };
   saveSettings(cfg);
   SERVER=Object.assign({}, SERVER||{}, cfg);   // 즉시 반영 + 전체 공유용 서버 저장
-  sendToSheet({ action:'setconfig', pin:adminPin||'', openAt:cfg.openAt, closeAt:cfg.closeAt, region:cfg.region, membersOnly:cfg.membersOnly?'1':'0' });
+  sendToSheet({ action:'setconfig', pin:adminPin||'', openAt:cfg.openAt, closeAt:cfg.closeAt, regionKo:cfg.regionKo, regionEn:cfg.regionEn, membersOnly:cfg.membersOnly?'1':'0' });
   lastMode=null; tick(); closeSet();
 });
 
