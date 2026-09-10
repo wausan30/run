@@ -129,8 +129,8 @@
   .gate.members .g-kicker{color:var(--red);}
   .gate.members .g-sub2{margin-top:12px;font-size:13px;color:#B9B4A8;line-height:1.6;letter-spacing:-.01em;white-space:pre-line;}
   .gate.members .walkwrap{margin-bottom:10px;}
-  .g-region{margin-top:12px;background:#F9F6F1;color:#E23A31;padding:11px 14px;font-size:14px;font-weight:700;letter-spacing:-.01em;line-height:1.4;}
-  .g-region b{color:#E23A31;font-weight:800;}
+  .g-region{margin-top:12px;font-size:14px;font-weight:700;letter-spacing:-.01em;color:#fff;line-height:1.4;}
+  .g-region b{font-weight:800;background:linear-gradient(90deg,#fff,#fff 40%,rgba(255,255,255,.35) 50%,#fff 60%,#fff);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shine 2.4s linear infinite;}
   .set-check{display:flex;align-items:center;gap:10px;margin:16px 0 4px;cursor:pointer;font-size:14px;font-weight:600;letter-spacing:-.01em;}
   .set-check input{width:20px;height:20px;accent-color:var(--red);flex:none;}
 
@@ -197,7 +197,7 @@
   @media (prefers-reduced-motion:reduce){
     .reveal{transition:none;transform:none;} .gate .cur,.caret{animation:none;} .sheet{animation:none;}
     .runner,.runner .legsA,.runner .legsB,.dance,.dance .armsA,.dance .armsB,.dance .dlegsA,.dance .dlegsB,.walkwrap,.walk,.walk .legsA,.walk .legsB{animation:none;} .legsB,.dance .armsB,.dance .dlegsB{opacity:0;}
-    .tw{animation:none;color:var(--ink);} .shine,.shine-w{animation:none;-webkit-text-fill-color:currentColor;background:none;}
+    .tw{animation:none;color:var(--ink);} .shine,.shine-w,.g-region b{animation:none;-webkit-text-fill-color:currentColor;background:none;}
     .ack{transition:border-color .15s;}
   }
 </style>
@@ -466,7 +466,7 @@ function tick(){
     }else if(mode==='open'){
       form.style.display='';
       gate.className='gate open';
-      gate.innerHTML=`${RUN_RUNNER}<div class="g-inner"><div class="g-kicker cap">${t.openKicker}</div><div class="g-title">${t.openTitle}<span class="cur">_</span></div><div class="g-sub cap">${t.closesIn} <b id="gcount"></b></div>${rg?`<div class="g-region">${t.regionTpl(esc(rg))}</div>`:''}</div>`;
+      gate.innerHTML=`${RUN_RUNNER}<div class="g-inner"><div class="g-title">${t.openTitle}<span class="cur">_</span></div><div class="g-sub cap">${t.closesIn} <b id="gcount"></b></div>${rg?`<div class="g-region">${t.regionTpl(esc(rg))}</div>`:''}</div>`;
       if(introDone) revealForm();
     }else if(mode==='upcoming'){
       form.style.display='none';
