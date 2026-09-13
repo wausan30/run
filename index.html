@@ -177,6 +177,7 @@
   .sheet h2{font-family:var(--cond);font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin:0 0 6px;font-size:26px;}
   .done-h{font-size:20px;font-weight:800;letter-spacing:-.02em;margin:0 0 8px;}
   .sheet .s-sub{font-size:13.5px;color:#4a4a46;margin-bottom:18px;letter-spacing:-.01em;line-height:1.6;}
+  .s-note{margin:0 0 18px;padding:12px 14px;background:#FCEEEC;font-size:13px;font-weight:600;color:var(--ink);line-height:1.55;letter-spacing:-.01em;}
   .close-btn{width:100%;border:2px solid var(--ink);background:transparent;color:var(--ink);font-weight:600;font-size:14px;letter-spacing:.08em;padding:14px;cursor:pointer;margin-top:10px;}
   .close-btn:active{transform:translate(1px,1px);}
 
@@ -269,6 +270,7 @@
     </div>
     <div class="done-h" id="doneH"></div>
     <p class="s-sub" id="doneSub"></p>
+    <p class="s-note" id="doneNote"></p>
     <button class="close-btn cap" id="doneClose"><span id="doneCloseTxt"></span></button>
   </div>
 </div>
@@ -331,6 +333,7 @@ const I18N = {
     ackConfirm:'네, 확인했어요', submit:'참가 신청하기', submitting:'접수 중…', gear:'설정',
     doneKicker:'접수됨 · 확정 대기', doneBig:'확정 대기 중', doneH:'참가 신청을 접수했습니다',
     doneSub:'러닝 참가가 확정되면 DM을 보내드리겠습니다.<br>감사합니다.',
+    doneNote:"📩 확정 DM이 안 보일 경우 [요청]에서 확인해주세요!",
     doneClose:'닫기',
     setSub:'신청 오픈·마감 시간을 조정해요. (관리자 전용)', pinPh:'PIN', pinOk:'확인',
     kOpen:'오픈', kClose:'마감', kPin:'PIN 변경', newPinPh:'새 PIN (선택)',
@@ -357,6 +360,7 @@ const I18N = {
     ackConfirm:'Got it', submit:'Apply to run', submitting:'Submitting…', gear:'Settings',
     doneKicker:'Received · Waiting', doneBig:'Now<br>waiting', doneH:'Your application is in.',
     doneSub:"We'll send you a DM once you're confirmed to run.<br>Thank you!",
+    doneNote:"📩 Can't find the confirmation DM? Check your 'Requests' folder!",
     doneClose:'Close',
     setSub:'Adjust the open / close time. (Admin only)', pinPh:'PIN', pinOk:'Enter',
     kOpen:'Open', kClose:'Close', kPin:'New PIN', newPinPh:'New PIN (optional)',
@@ -558,7 +562,7 @@ function applyLang(){
   set('eyebrow',t.eyebrow); set('subko',t.subko); set('introP',t.intro);
   set('igLabel',t.igLabel); set('igSub',t.igSub); ig.placeholder=t.igPh;
   set('submitTxt',t.submit); document.getElementById('gear').setAttribute('aria-label',t.gear);
-  set('doneKicker',t.doneKicker); setH('doneBig',t.doneBig); set('doneH',t.doneH); setH('doneSub',t.doneSub); set('doneCloseTxt',t.doneClose);
+  set('doneKicker',t.doneKicker); setH('doneBig',t.doneBig); set('doneH',t.doneH); setH('doneSub',t.doneSub); set('doneNote',t.doneNote); set('doneCloseTxt',t.doneClose);
   document.getElementById('pinInput').placeholder=t.pinPh; set('pinOkTxt',t.pinOk);
   set('kOpen',t.kOpen); set('kClose',t.kClose); set('kRegionKo',t.kRegionKo); set('kRegionEn',t.kRegionEn); set('moLabel',t.moCheck);
   set('setHint',t.setHint); set('setSaveTxt',t.setSave); set('setClose1Txt',t.close); set('setClose2Txt',t.close);
